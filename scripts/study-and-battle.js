@@ -37,7 +37,7 @@ function wbDisplay(){clearTimeout(wbTimer);if(wbIndex>=wbRound.length){wbStage='
  const r=wbRound[wbIndex];wbMisses=0;wbStage='study';WB('wbCardProgress').textContent=`Card ${wbIndex+1} / ${wbRound.length}`;WB('wbCardSource').textContent=r.level+' word bank';WB('wbCardBase').textContent=r.study_family||r.lemma;WB('wbCardPart').textContent=(r.derivational_branch||wbGroupName(r))+' · '+(r.origin==='official_answer'?'Exam-attested answer':'Study-bank form');WB('wbCardWord').textContent=r.word;WB('wbCardPrompt').textContent='Read the word, notice its spelling, then hide it and try to remember it.';WB('wbCardAnswer').classList.add('hidden');WB('wbRecallInput').value='';WB('wbCardFeedback').textContent='';WB('wbHide').classList.remove('hidden');WB('wbSkip').classList.add('hidden');}
 function wbHide(){wbStage='type';WB('wbCardWord').textContent='•••••';WB('wbCardPrompt').textContent='Write the form you just studied.';WB('wbCardAnswer').classList.remove('hidden');WB('wbHide').classList.add('hidden');WB('wbSkip').classList.remove('hidden');WB('wbRecallInput').focus()}
 function wbCheck(){if(wbStage!=='type'&&wbStage!=='correct')return;const r=wbRound[wbIndex];const typed=wbLetters(WB('wbRecallInput').value);if(!typed)return;
- if(typed===wbLetters(r.word)||typed===WF_SPELLING_EQUIVALENTS[wbLetters(r.word)]){if(!wbMisses)wbFirstTry++;const variantAccepted=typed!==wbLetters(r.word);WB('wbCardFeedback').textContent=variantAccepted?`Correct! Both ${r.word} and ${typed} are accepted spellings. 🌍`:(wbMisses?'Good recovery! You corrected the spelling.':'Excellent! You remembered the word! 🔥');WB('wbCardWord').textContent=r.word;wbStage='feedback';WB('wbCardAnswer').classList.add('hidden');WB('wbSkip').classList.add('hidden');wbTimer=setTimeout(()=>{wbIndex++;wbDisplay()},wbMisses?1600:1200);return;}
+ if(typed===wbLetters(r.word)||typed===WF_SPELLING_EQUIVALENTS[wbLetters(r.word)]||SenseiSpellings.matchesStudy(typed,r.word,r)){if(!wbMisses)wbFirstTry++;const variantAccepted=typed!==wbLetters(r.word);WB('wbCardFeedback').textContent=variantAccepted?`Correct! Both ${r.word} and ${typed} are accepted spellings. 🌍`:(wbMisses?'Good recovery! You corrected the spelling.':'Excellent! You remembered the word! 🔥');WB('wbCardWord').textContent=r.word;wbStage='feedback';WB('wbCardAnswer').classList.add('hidden');WB('wbSkip').classList.add('hidden');wbTimer=setTimeout(()=>{wbIndex++;wbDisplay()},wbMisses?1600:1200);return;}
  wbMisses++;if(wbMisses===1){WB('wbCardFeedback').textContent='Almost! Check the spelling. It starts with “'+r.word.charAt(0)+'” and has '+r.word.length+' characters.';}
  else {wbStage='correct';WB('wbCardWord').textContent=r.word;WB('wbCardFeedback').textContent='Study the correct form above, then type it accurately to continue.';WB('wbCardPrompt').textContent='Learning includes correcting your own mistakes.';WB('wbSkip').classList.add('hidden');}WB('wbRecallInput').select();}
 function wbReveal(){if(wbStage!=='type')return;wbMisses=Math.max(wbMisses,2);wbStage='correct';const r=wbRound[wbIndex];WB('wbCardWord').textContent=r.word;WB('wbCardFeedback').textContent='Read the form, then type it correctly before moving on.';WB('wbCardPrompt').textContent='Take another look at the spelling.';WB('wbSkip').classList.add('hidden');WB('wbRecallInput').focus();}
@@ -81,7 +81,7 @@ function v64RenderHp(){
  const spent=Math.min(capacity,Math.max(0,V54.failures));
  panel.replaceChildren();for(let i=0;i<capacity;i++){const div=document.createElement('span');div.className='hp-part'+(i<spent?' lost':'');div.title=`HP ${i+1}`;panel.append(div)}
  const remaining=Math.max(0,capacity-spent);
- document.getElementById('v64HPLabel').textContent=`${remaining} / ${capacity} HP · ${game.shields} 🛡️`;const finisherHint=document.getElementById('v65FinisherHint');if(finisherHint)finisherHint.textContent=`🐉 Mizoryo attacks at 0 HP, or after ${V54.winTarget} correct answers · ${Math.max(0,V54.winTarget-V54.wins)} to the goal`;
+ document.getElementById('v64HPLabel').textContent=`${remaining} / ${capacity} HP · ${game.shields} 🛡️`;const finisherHint=document.getElementById('v65FinisherHint');if(finisherHint)finisherHint.textContent=`🐉 Mizoryo attacks only at 0 HP · 🏆 ${Math.max(0,V54.winTarget-V54.wins)} wins until graduation`;
 }
 function v64HitNotice(message){
  const element=document.getElementById('v64HitMessage');element.textContent=message;element.classList.add('show');
@@ -188,12 +188,54 @@ function v64CloseBattle(){
  V64Combat.active=false;const layer=document.getElementById('v64BattleOverlay');layer.hidden=true;
  const frame=document.getElementById('v64BattleFrame');V64Combat.iframe=null;setTimeout(()=>{if(!V64Combat.active)frame.src='about:blank';},300);
 }
+// V6_9: victory is earned by reaching the target. Mizoryo remains the last-HP punishment.
+const V69Victory={shown:false};
+const V69_RANKS={
+ wannabe:{icon:'🥷',title:'Wannabe Ninja Training',message:'You have mastered the Wannabe Ninja Training!',next:'ninja',nextLabel:'🌙 Advance to Ninja Development',color:'emerald'},
+ ninja:{icon:'🌙',title:'Ninja Development Course',message:'You have completed the Ninja Development Course!',next:'master',nextLabel:'⚔️ Advance to Master Training',color:'sapphire'},
+ master:{icon:'⚔️',title:'Master Training Regimen',message:'You have mastered the Master Training Regimen!',next:'hell',nextLabel:'🔥 Enter Hell Mode',color:'violet'},
+ hell:{icon:'🔥',title:'Hell Mode',message:'You have survived Hell Mode!',next:null,nextLabel:null,color:'inferno'}
+};
+function v69SelectDifficulty(level){V54.difficulty=level;document.querySelectorAll('[data-difficulty]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.difficulty===level)));}
+function v69SelectCount(count){saved.count=String(count);document.querySelectorAll('[data-count]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.count===String(count))));if(saved.mode!=='mix'&&['each','members','allforms'].includes(saved.count)){saved.mode='mix';selectedButton('[data-mode]','mode',saved.mode);}updatePlan();}
+function v69VictoryAction(action){
+ const o=document.getElementById('v69VictoryOverlay');o.classList.add('hidden');
+ const rank=V69_RANKS[V54.difficulty];
+ if(action==='next'&&rank.next)v69SelectDifficulty(rank.next);
+ if(action.startsWith('count:'))v69SelectCount(Number(action.slice(6)));
+ if(action==='again'||action==='next'||action.startsWith('count:')){show('setup');enterDojo();return;}
+ show('endView');
+}
+function v69Celebrate(){
+ const rank=V69_RANKS[V54.difficulty]||V69_RANKS.wannabe;
+ const ov=document.getElementById('v69VictoryOverlay');
+ ov.dataset.rank=rank.color;
+ document.getElementById('v69VictoryGlyph').textContent=rank.icon;
+ document.getElementById('v69VictoryCourse').textContent=rank.title;
+ document.getElementById('v69VictoryMessage').textContent=rank.message;
+ document.getElementById('v69VictoryScore').textContent=`${V54.wins} / ${V54.winTarget} successful challenges`;
+ document.getElementById('v69VictorySub').textContent=rank.next?'You may advance to the next level!':
+  (V54.winTarget<20?'Outstanding! Your next challenge: 20 or 30 correct answers.':V54.winTarget<30?'Outstanding! Could you survive 30 correct answers?':'Ultimate challenge complete! Repeat 30 or choose a different set of word families.');
+ const actions=document.getElementById('v69VictoryActions');actions.replaceChildren();
+ const add=(label,action,variant)=>{const b=document.createElement('button');b.type='button';b.className='v69-victory-btn '+variant;b.textContent=label;b.onclick=()=>v69VictoryAction(action);actions.append(b);return b;};
+ let first;
+ if(rank.next)first=add(rank.nextLabel,'next','primary');
+ else if(V54.winTarget<20){first=add('🔥 Try 20 correct answers','count:20','primary');add('🔥 Try 30 correct answers','count:30','primary');}
+ else if(V54.winTarget<30)first=add('🔥 Try 30 correct answers','count:30','primary');
+ else first=add('🔥 Repeat the 30-answer challenge','again','primary');
+ add('🔁 Train again at this level','again','secondary');
+ add('📜 View results','results','text');
+ ov.classList.remove('hidden');
+ (first||actions.querySelector('button'))?.focus({preventScroll:true});
+}
 function finish(){
  if(V64Combat.active)return;
  if(V54.wins>=V54.winTarget && V54.winTarget>0){
-  // First-try goal reached. End-of-training duel only once per session.
-  if(V64Combat.shown){v64FinishBase();return;}
-  V64Combat.shown=true;v64HitNotice('🐉 FINISHER UNLOCKED! Mizoryo awaits.');v64OpenBattle();
+  if(V69Victory.shown)return;
+  V69Victory.shown=true;
+  v64FinishBase();
+  document.getElementById('endTitle').textContent=(V69_RANKS[V54.difficulty]||V69_RANKS.wannabe).message;
+  v69Celebrate();
  }else v64FinishBase();
 }
 window.addEventListener('message',event=>{

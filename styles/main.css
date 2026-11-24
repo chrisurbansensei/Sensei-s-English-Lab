@@ -226,3 +226,48 @@ body{background:radial-gradient(circle at 12% 0%,#292044 0,transparent 34%),radi
 }
 @keyframes v68HeroCelebrate{0%{opacity:0;transform:translateY(32px) scale(.88)}55%{opacity:1;transform:translateY(-5px) scale(1.04)}100%{opacity:1;transform:translateY(0) scale(1)}}
 @media(prefers-reduced-motion:reduce){#milestoneOverlay .v67-streak-motion{display:block!important;animation:none!important}}
+
+
+/* V6_9 Rank Graduation: lightweight CSS-powered celebration, no external media */
+#v69VictoryOverlay{position:fixed;inset:0;z-index:13000;display:flex;align-items:center;justify-content:center;overflow:auto;padding:18px 12px;background:radial-gradient(ellipse at 50% 18%,#253d59f2,#07101df7 73%);backdrop-filter:blur(10px);isolation:isolate;color:#f4f7ff}
+#v69VictoryOverlay.hidden{display:none!important}
+#v69VictoryOverlay[data-rank="emerald"]{--v69accent:#5ce0c7;--v69glow:#42d4b655}
+#v69VictoryOverlay[data-rank="sapphire"]{--v69accent:#90cbff;--v69glow:#579dfd66}
+#v69VictoryOverlay[data-rank="violet"]{--v69accent:#d7b5ff;--v69glow:#9862fa66}
+#v69VictoryOverlay[data-rank="inferno"]{--v69accent:#ffc475;--v69glow:#f89c4577}
+.v69-victory-card{position:relative;z-index:2;width:min(690px,100%);max-height:min(96vh,940px);overflow:auto;padding:clamp(25px,4.2vw,48px) clamp(18px,5vw,45px);border:1px solid var(--v69accent,#a8f9c7);border-radius:30px;background:linear-gradient(160deg,#182e49 0%,#101a31 55%,#19152d 100%);box-shadow:0 0 80px var(--v69glow,#53e3ba33),0 27px 85px #000b,inset 0 1px 0 #ffffff29;text-align:center;animation:v69Arrival .85s cubic-bezier(.16,.95,.18,1) both}
+.v69-halo{position:absolute;inset:-70px 0 auto;height:300px;pointer-events:none;background:radial-gradient(ellipse,var(--v69glow,#68f9bf33),transparent 70%);animation:v69Shimmer 2.8s ease-in-out infinite alternate}
+.v69-victory-glyph{position:relative;display:inline-grid;place-items:center;width:114px;height:114px;border-radius:50%;margin:5px auto 13px;font-size:63px;background:radial-gradient(circle,#273c61,#101b30);border:2px solid var(--v69accent);box-shadow:0 0 38px var(--v69glow),inset 0 0 22px #ffffff17;animation:v69Medal 1.5s cubic-bezier(.2,.8,.2,1) both}
+.v69-kicker{font-size:clamp(17px,3vw,25px);font-weight:950;color:var(--v69accent);letter-spacing:.16em;text-shadow:0 0 17px var(--v69glow);animation:v69Text .8s .2s both}
+.v69-laurel{margin:8px auto 4px;font-size:32px;animation:v69Medal 1s .35s both}
+.v69-victory-card h2{margin:4px 0 8px;font-size:clamp(26px,5vw,42px);color:#fff0c8;line-height:1.14}
+.v69-victory-message{font-size:clamp(17px,2.7vw,22px);line-height:1.45;font-weight:750;margin:10px 0 15px;color:#f1f7ff}
+.v69-victory-score{display:inline-block;border-radius:99px;padding:10px 22px;background:#152e47;border:1px solid var(--v69accent);color:#e5fff6;font-weight:850;font-size:16px}
+.v69-victory-sub{color:#dce5f3;font-size:16px;line-height:1.4;margin:17px auto 20px}
+.v69-victory-actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px}
+.v69-victory-btn{min-height:48px;border-radius:12px;padding:12px 18px;cursor:pointer;font-weight:850;font-size:15px;border:1px solid #8eabc8;color:#e9faff;background:#233958;transition:transform .14s,background .14s}
+.v69-victory-btn:hover,.v69-victory-btn:focus-visible{transform:translateY(-2px);outline:2px solid var(--v69accent);outline-offset:2px}
+.v69-victory-btn.primary{background:linear-gradient(120deg,#275b62,#394b8f);border-color:var(--v69accent);color:#fff}
+.v69-victory-btn.secondary{background:#1e334e}
+.v69-victory-btn.text{background:transparent;border-color:transparent;text-decoration:underline;color:#b9dfef}
+.v69-celebrate-effects{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.v69-celebrate-effects:before,.v69-celebrate-effects:after{content:'✦ ✧ ✦ ✧ ✦ ✦ ✧ ✦ ✧ ✦';display:block;position:absolute;left:0;width:100%;font-size:clamp(20px,3vw,40px);letter-spacing:.08em;color:var(--v69accent);opacity:.72;white-space:nowrap;overflow:hidden;text-align:center;animation:v69Float 5s linear infinite}
+.v69-celebrate-effects:after{animation-delay:-2.5s;left:11%;width:85%;font-size:18px;filter:blur(1px)}
+@keyframes v69Arrival{from{opacity:0;transform:translateY(45px) scale(.91)}65%{opacity:1;transform:translateY(-6px) scale(1.01)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes v69Medal{from{opacity:0;transform:scale(.5) rotate(-25deg)}70%{transform:scale(1.14) rotate(6deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+@keyframes v69Text{from{opacity:0;letter-spacing:.4em}to{opacity:1;letter-spacing:.16em}}
+@keyframes v69Shimmer{from{transform:scale(.84);opacity:.4}to{transform:scale(1.2);opacity:1}}
+@keyframes v69Float{from{transform:translateY(102vh) rotate(-8deg);opacity:0}12%{opacity:.75}88%{opacity:.75}to{transform:translateY(-40vh) rotate(8deg);opacity:0}}
+@media(max-width:600px){.v69-victory-card{padding:23px 14px;border-radius:20px}.v69-victory-glyph{width:88px;height:88px;font-size:47px}.v69-victory-btn{flex:1 1 100%}}
+@media(prefers-reduced-motion:reduce){#v69VictoryOverlay *,#v69VictoryOverlay *:before,#v69VictoryOverlay *:after{animation:none!important;transition:none!important}}
+
+/* Rank-specific award motions: the animation changes with the training level. */
+#v69VictoryOverlay[data-rank="emerald"] .v69-victory-glyph{animation:v69NinjaLeap 1.3s ease-in-out both}
+#v69VictoryOverlay[data-rank="sapphire"] .v69-victory-glyph{animation:v69MoonFlip 1.5s cubic-bezier(.2,.78,.2,1) both}
+#v69VictoryOverlay[data-rank="violet"] .v69-victory-glyph{animation:v69SwordSlash 1.3s ease-out both}
+#v69VictoryOverlay[data-rank="inferno"] .v69-victory-glyph{animation:v69FlameVictory 1.7s ease-in-out both}
+@keyframes v69NinjaLeap{0%{opacity:0;transform:translateY(90px) scale(.5) rotate(-12deg)}55%{opacity:1;transform:translateY(-24px) scale(1.2) rotate(8deg)}75%{transform:translateY(4px) scale(.95)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes v69MoonFlip{0%{opacity:0;transform:rotateY(-200deg) scale(.65)}60%{opacity:1;transform:rotateY(30deg) scale(1.15)}100%{opacity:1;transform:rotateY(0) scale(1)}}
+@keyframes v69SwordSlash{0%{opacity:0;transform:translateX(-85px) rotate(-35deg) scale(.65)}40%{opacity:1;transform:translateX(20px) rotate(26deg) scale(1.2)}70%{transform:translateX(-5px) rotate(-7deg)}100%{transform:translateX(0) rotate(0) scale(1)}}
+@keyframes v69FlameVictory{0%{opacity:0;transform:translateY(90px) scale(.25);filter:brightness(.3)}48%{opacity:1;transform:translateY(-15px) scale(1.35);filter:brightness(1.9)}70%{transform:translateY(5px) scale(.95);filter:brightness(1.2)}100%{opacity:1;transform:translateY(0) scale(1);filter:brightness(1)}}
+@media(prefers-reduced-motion:reduce){#v69VictoryOverlay .v69-victory-glyph{animation:none!important}}
